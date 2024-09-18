@@ -1,6 +1,12 @@
 <div class="row justify-content-center mt-3">
     <div class="col-md-12">
-        <!-- Add New Product Form -->
+        <div class="card mt-2">
+            
+            <div class="card-header">
+                Detail Transactions
+            </div>
+            <div class="card-body">
+                <!-- Add New Product Form -->
         <form wire:submit.prevent="save">
             @foreach($products as $key => $product)
                 <div class="row mb-3">
@@ -18,6 +24,7 @@
                         @enderror
                     </div>
 
+
                     <!-- Stok Produk -->
                     <div class="col-md-2">
                         <label for="stok_{{ $key }}" class="form-label">Stok Produk</label>
@@ -26,6 +33,7 @@
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
+
 
                     <!-- Unit Price -->
                     <div class="col-md-2">
@@ -36,6 +44,7 @@
                         @enderror
                     </div>
 
+
                     <!-- Quantity -->
                     <div class="col-md-2">
                         <label for="quantity_{{ $key }}" class="form-label">Quantity</label>
@@ -44,6 +53,7 @@
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
+
 
                     <!-- Subtotal -->
                     <div class="col-md-2">
@@ -54,6 +64,7 @@
                         @enderror
                     </div>
 
+
                     <!-- Remove Button -->
                     <div class="col-md-2 mt-4">
                         <button type="button" class="btn btn-danger mt-2" wire:click="removeProduct({{ $key }})">
@@ -63,11 +74,13 @@
                 </div>
             @endforeach
 
+
             @if ($transactionStatus == 'Pending')        
                 <!-- Add New Product Button -->
                 <button type="button" class="btn btn-warning mb-3 me-3" wire:click="addForm">
                     <span class="text-white">Add New Product</span>
                 </button>
+
 
                 <!-- Submit Button -->
                 <button type="submit" class="btn btn-success mb-3 px-5">
@@ -77,12 +90,6 @@
             <div wire:loading class="text-primary mt-2">Processing...</div>
         </form>
 
-        <div class="card mt-2">
-            <div class="card-header">
-                Detail Transactions
-            </div>
-            <div class="card-body">
-                <!-- Transaction Details Table -->
                 <table class="table table-striped table-bordered">
                     <thead>
                         <tr>
@@ -104,9 +111,7 @@
                                 <td>Rp.{{ number_format( $detail->subtotal ) }}</td>
                             <td>
                                     @if ($transactionStatus == 'Pending')
-                                        <button type="button" class="btn btn-danger" wire:click="removeProductDetail({{ $detail->id }})">
-                                            Remove
-                                        </button>
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="hapus_details({{ $detail->id }})"><i class="bi bi-trash"></i> Delete</button>
                                     @endif
                                 </td>
                             </tr>
@@ -118,13 +123,16 @@
                     </tbody>
                 </table>
 
-                <div class="float-end mt-3 me-5">
-                    <h5>Total Amount : Rp.{{ number_format( $totalSubtotal) }}</h5>
+
+ <div class="float-end mt-3 me-5">                
+<h5>Total Amount : Rp.{{ number_format( $totalSubtotal) }}</h5>
                     @if ($transactionStatus == 'Pending')
                         <!-- Payment Button -->
                         <a href="{{ route('payment-page', ['transactionId' => $transactionId]) }}" class="btn btn-primary">Bayar</a>
                     @endif
                 </div>
+
+
 
                 <div class="float-start mt-4 mx-3">
                      <a href="{{ route('transactions.index') }}" class="btn btn-secondary">Kembali</a>
@@ -134,5 +142,40 @@
     </div>
 </div>
 
-<!-- Bootstrap and Livewire Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function hapus_details(hapus_id) {
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-primary mx-4',
+                cancelButton: 'btn btn-danger mx-4'
+            },
+            buttonsStyling: false
+        });
+
+
+        swalWithBootstrapButtons.fire({
+            title: 'Hapus Data Produk',
+            text: "Data kamu tidak bisa dikembalikan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Tidak, batal!',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                @this.call('removeProductDetail'    , hapus_id);
+                swalWithBootstrapButtons.fire(
+                    'Hapus!',
+                    'Transaction Successfully Deleted and stock returned if completed.',
+                    'success'
+                );
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                swalWithBootstrapButtons.fire(
+                    'Batal',
+                    'Data kamu masih aman :)',
+                    'error'
+                );
+            }
+        });
+    }
+</script>
