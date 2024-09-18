@@ -100,13 +100,4 @@
             }
         });
     }
-
-    document.addEventListener('livewire:load', function () {
-        Livewire.on('set-editor-data', data => {
-            const editorInstance = editorInstances[0]; // assuming single editor for edit
-            if (editorInstance) {
-                editorInstance.setData(data.description);
-            }
-        });
-    });
 </script>

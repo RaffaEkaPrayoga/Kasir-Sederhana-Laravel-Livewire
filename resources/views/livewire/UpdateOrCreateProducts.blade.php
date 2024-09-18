@@ -19,20 +19,21 @@
 
                         <!-- Product Description -->
                         <label for="description" class="form-label">Product Description</label>
-                            <div wire:ignore x-data x-init="
-                                ClassicEditor.create($refs.editor)
-                                    .then(newEditor => {
-                                        editor = newEditor;
-                                        editor.model.document.on('change:data', () => {
-                                            @this.set('product.description', editor.getData());
-                                        });
-                                    })
-                                    .catch(error => {
-                                        console.error(error);
-                                    })
-                            ">
-                                <textarea x-ref="editor" class="form-control">{{ $product['description'] ?? '' }}</textarea>
-                            </div>
+                        <div wire:ignore x-data x-init="
+                            ClassicEditor.create($refs.editor)
+                                .then(newEditor => {
+                                    editor = newEditor;
+                                    editor.setData(@this.get('product.description')); // Set initial data
+                                    editor.model.document.on('change:data', () => {
+                                        @this.set('product.description', editor.getData()); // Correct binding to update Livewire
+                                    });
+                                })
+                                .catch(error => {
+                                    console.error(error);
+                                })
+                        ">
+                            <textarea x-ref="editor" class="form-control"></textarea>
+                        </div>
                         @error('product.description')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
@@ -84,11 +85,17 @@
 <!-- CKEditor Script -->
 <script src="https://cdn.ckeditor.com/ckeditor5/39.0.0/classic/ckeditor.js"></script>
 <script>
-    document.addEventListener('livewire:load', function () {
-        Livewire.on('set-editor-data', data => {
-            const editorInstance = editorInstances[0]; // assuming single editor for edit
-            if (editorInstance) {
-                editorInstance.setData(data.description);
+    document.addEventListener('DOMContentLoaded', function() {
+        Livewire.on('editProduct', () => {
+            if (window.editor) {
+                editor.setData(@this.get('product.description')); // Set CKEditor data from Livewire property
+            }
+        });
+
+        Livewire.on('addProduct', () => {
+            if (window.editor) {
+                // Clear CKEditor value when adding a new product
+                editor.setData('');
             }
         });
     });
