@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('transaction_code')->unique();
             $table->integer('total_amount'); // Changed from decimal to integer
             $table->string('customer_name')->nullable();
+            $table->integer('bayar')->default(0); 
+            $table->integer('kembalian')->default(0);
             $table->string('status')->default('pending');
             $table->timestamps();
         });
