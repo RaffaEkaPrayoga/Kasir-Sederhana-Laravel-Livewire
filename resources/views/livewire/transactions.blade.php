@@ -1,61 +1,7 @@
-<div class="row justify-content-center mt-3">
-    <div class="col-md-12">
+<div class="row justify-content-center mt-3"> 
+	<div class="col-md-12">
         <div class="card mt-5">
-            <!-- Add Transaction Button -->
-            <div class="card-header">
-                Trasactions List
-                <button class="btn btn-primary float-end" wire:click="resetFields" data-bs-toggle="modal" data-bs-target="#transactionModal">
-                    Add New Transaction
-                </button>
-            </div>
-            <div class="card-body">
-                <!-- Search Bar -->
-                <div class="mb-3">
-                    <input type="text" wire:model.live="searchTerm" class="form-control" placeholder="Search Transactions">
-                </div>
-
-                
-                <!-- Transactions Table -->
-                <table class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Transaction Code</th>
-                            <th>Date</th>
-                            <th>Customer Name</th>
-                            <th>Total Amount</th>
-                            <th>Bayar</th>
-                            <th>Kembalian</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($transactions as $transaction)
-                            <tr>
-                                <td>{{ $transaction->transaction_code }}</td>
-                                <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('Y-m-d') }}</td>
-                                <td>{{ $transaction->customer_name }}</td>
-                                <td>Rp.{{ number_format($transaction->total_amount) }}</td>
-                                <td>Rp.{{ number_format( $transaction->bayar) }}</td>
-                                <td>Rp.{{ number_format( $transaction->kembalian) }}</td>
-                                <td>{{ $transaction->status }}</td>
-                                <td>
-                                    <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#transactionModal"  wire:click="edit({{ $transaction->id }})">Edit</button>
-                                    <button class="btn btn-danger btn-sm" onclick="hapus_transactions({{ $transaction->id }})">Delete</button>
-                                    <a href="{{ route('transaction.details', $transaction->id) }}" class="btn btn-primary btn-sm">Details</a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-
-                <!-- Pagination Links -->
-                <div class="d-flex justify-content-center">
-                    {{ $transactions->links() }}
-                </div>
-
-                <!-- Add/Edit Modal -->
-                <div wire:ignore.self class="modal fade" id="transactionModal" tabindex="-1" aria-labelledby="transactionModalLabel" aria-hidden="true">
+            <div wire:ignore.self class="modal fade" id="transactionModal" tabindex="-1" aria-labelledby="transactionModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
@@ -110,6 +56,56 @@
                         </div>
                     </div>
                 </div>
+
+            <!-- Add Transaction Button -->
+            <div class="card-header">
+                Trasactions List
+                <button class="btn btn-primary float-end" wire:click="resetFields" data-bs-toggle="modal" data-bs-target="#transactionModal">
+                    Add New Transaction
+                </button>
+            </div>
+            <div class="card-body">
+          
+                <!-- Transactions Table -->
+                <table class="table table-striped table-bordered">
+                    <form>
+                    <input type="text" wire:model.live="searchTerm" class="form-control mb-3" placeholder="Search Transactions..." />
+                </form>
+
+                    <thead>
+                        <tr>
+                            <th>Transaction Code</th>
+                            <th>Date</th>
+                            <th>Customer Name</th>
+                            <th>Total Amount</th>
+                            <th>Bayar</th>
+                            <th>Kembalian</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($transactions as $transaction)
+                            <tr>
+                                <td>{{ $transaction->transaction_code }}</td>
+                                <td>{{ \Carbon\Carbon::parse($transaction->created_at)->format('Y-m-d') }}</td>
+                                <td>{{ $transaction->customer_name }}</td>
+                                <td>Rp.{{ number_format($transaction->total_amount) }}</td>
+                                <td>Rp.{{ number_format( $transaction->bayar) }}</td>
+                                <td>Rp.{{ number_format( $transaction->kembalian) }}</td>
+                                <td>{{ $transaction->status }}</td>
+                                <td>
+                                    <button class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#transactionModal"  wire:click="edit({{ $transaction->id }})">Edit</button>
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="hapus_transactions({{ $transaction->id }})"><i class="bi bi-trash"></i> Delete</button>
+                                    <a href="{{ route('transaction.details', $transaction->id) }}" class="btn btn-primary btn-sm">Details</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                 <div class="d-flex justify-content-center">
+                    {{ $transactions->links() }}
+                </div>
             </div>
         </div>
     </div>
@@ -126,7 +122,7 @@
         });
 
         swalWithBootstrapButtons.fire({
-            title: 'Hapus Data Produk',
+            title: 'Hapus Data Transaction',
             text: "Data kamu tidak bisa dikembalikan!",
             icon: 'warning',
             showCancelButton: true,
